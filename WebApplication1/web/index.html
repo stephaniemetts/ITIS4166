@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Stephanie's Makeup Store Home Page</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="newcss.css">
+    </head>
+    <body>
+        <ul>
+            <li><a href="index.html">Home Login</a></li>
+            <li><a href="registration.html">New User</a></li>
+            <li><a href="contentpage1.html">Products</a></li>
+            <li><a href="cart.html">Cart</a></li>
+            <li><a href="orderhistory.html">Order History</a></li>
+        </ul>
+        <h1>Stephanie's Makeup Store</h1>
+        <p>Welcome to Stephanie's Makeup Store. We aim to provide high quality products for all of your makeup needs.</p>
+            
+        <h2>Please Login</h2>
+        <form>
+            Email: <br><input type="text" name="email" required><br>
+            Password:  <br><input type="password" name="password" required><br>
+            <br>
+            <input type="submit" onmouseover="colorA(this)" onmouseout="colorB(this)" value="Submit"><br>        
+        </form>
+        
+        <a href="registration.html" onmouseover="colorA(this)" onmouseout="colorB(this)" class ="button" >New User?</a>
+        
+            <script>
+                function colorA(x){
+                    x.style.color = "black";
+                }
+                function colorB(x) {
+                    x.style.color ="white";
+                }
+            </script>
+        
+    </body>
+</html>

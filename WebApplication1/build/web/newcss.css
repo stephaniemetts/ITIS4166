@@ -1,0 +1,107 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Jan 28, 2016, 2:14:10 PM
+    Author     : stephanie
+*/
+
+body
+{
+    text-align: center;
+    font-family: "Arial";
+}
+
+h1 {
+    font-style: bold;
+    font-family: "Arial";
+}
+
+p
+{
+    font-family: "Arial";
+}
+
+h2
+{
+    font-family: "Arial";
+}
+
+div {
+    height: 100px;
+    width: 300px;
+    text-align: center;
+    display: inline-block;
+}
+
+ul {
+    list-style-type: none;
+    padding-top: 100px;
+    font-family: "Arial";
+    margin: 10px;
+    padding: 10px;
+    width: 150px;
+    background-color: #f1f1f1;
+    height: 100px; /* Full height */
+    position: fixed; /* Make it stick, even on scroll */
+    overflow: auto; 
+}
+
+table, th, td {
+   
+}
+table {
+    border-collapse: collapse;
+    width: 30%;
+    align: center;
+}
+
+th {
+    height: 20px;
+    background-color: lavender;
+}
+
+th, td {
+    border-bottom: grey;
+    padding: 15px;
+}
+
+input[type=text] {
+    width: 15%;
+    padding: 10px 10px;
+    margin: 5px 0;
+    box-sizing: border-box;
+}
+
+input[type=password] {
+    width: 20%;
+    padding: 10px 10px;
+    margin: 8px 0;
+    box-sizing: border-box;
+}
+
+input[type=button], input[type=submit], input[type=reset] {
+     background-color: dodgerblue;
+    border: none;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+
+.button {
+    background-color: dodgerblue;
+    border: none;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    margin: 4px 2px;
+    cursor: pointer;
+}
