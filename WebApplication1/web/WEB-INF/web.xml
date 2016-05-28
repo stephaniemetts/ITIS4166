@@ -21,8 +21,16 @@
         <servlet-class>login.orderhistory</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>NewServlet</servlet-name>
-        <servlet-class>login.NewServlet</servlet-class>
+        <servlet-name>checkUserAvailability</servlet-name>
+        <servlet-class>login.checkUserAvailability</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UserBean</servlet-name>
+        <servlet-class>login.UserBean</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>otherViewRedirect</servlet-name>
+        <servlet-class>login.otherViewRedirect</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>index</servlet-name>
@@ -45,8 +53,16 @@
         <url-pattern>/orderhistory</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>NewServlet</servlet-name>
-        <url-pattern>/NewServlet</url-pattern>
+        <servlet-name>checkUserAvailability</servlet-name>
+        <url-pattern>/checkUserAvailability</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UserBean</servlet-name>
+        <url-pattern>/UserBean</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>otherViewRedirect</servlet-name>
+        <url-pattern>/otherViewRedirect</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

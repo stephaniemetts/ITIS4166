@@ -7,12 +7,17 @@ package login;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  *
@@ -69,91 +74,287 @@ public class cart extends HttpServlet{
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             
+            HttpSession userSession = request.getSession();
+            User theUser = (User)userSession.getAttribute("session");
+            
             String addMoney = request.getParameter("addmoney");
             String clearCart = request.getParameter("clearcart");
             String checkout = request.getParameter("checkout");
+            double cartTotal = 0.00;
             
-              
-            if((addMoney == null || addMoney.equals("")) && clearCart == null && checkout == null ) 
-            {
+            if (theUser == null || theUser.equals("")) {
                 out.println("<!DOCTYPE html>");
-                out.println("<html>");
-                out.println("<head>");
-                out.println("<title>Stephanie's Makeup Store Home Page</title>");   
-                out.println("<link rel=\"stylesheet\" type=\"text/css\" href=\"newcss.css\">"); //this is linking to a css file
-                out.println("</head>");
-                out.println("<body>");
-                out.println("<ul>");
-                    out.println("<li><a href=\"index\">Home Login</a></li>");
+                        out.println("<html>");
+                        out.println("<head>");
+                        out.println("<title>Stephanie's Makeup Store Home Page</title>");   
+                        out.println("<link rel=\"stylesheet\" type=\"text/css\" href=\"newcss.css\">"); //this is linking to a css file
+                        out.println("</head>");
+                        out.println("<body>");
+                        out.println("<ul>");
+                        out.println("<li><a href=\"index\">Home Login/Logout</a></li>");
+                        out.println("<li><a href=\"registration\">New User</a></li>");
+                        out.println("<li><a href=\"content\">Products</a></li>");
+                        out.println("<li><a href=\"cart\">Cart</a></li>");
+                        out.println("<li><a href=\"orderhistory\">Order History</a></li>");
+                        out.println("</ul>");
+                out.print("You are not logged in.");
+                        out.println("</body>");
+                        out.println("</html>");
+                        response.sendRedirect("./index");
+            } else {
+                out.println("Hello, " + theUser.firstName + "!");
+                out.println("<br>");
+                if((addMoney == null || addMoney.equals("")) && clearCart == null && checkout == null ) 
+                {
+                    out.println("<!DOCTYPE html>");
+                    out.println("<html>");
+                    out.println("<head>");
+                    out.println("<title>Stephanie's Makeup Store Home Page</title>");   
+                    out.println("<link rel=\"stylesheet\" type=\"text/css\" href=\"newcss.css\">"); //this is linking to a css file
+                    out.println("</head>");
+                    out.println("<body>");
+                    out.println("<ul>");
+                    out.println("<li><a href=\"index\">Home Login/Logout</a></li>");
                     out.println("<li><a href=\"registration\">New User</a></li>");
                     out.println("<li><a href=\"content\">Products</a></li>");
                     out.println("<li><a href=\"cart\">Cart</a></li>");
                     out.println("<li><a href=\"orderhistory\">Order History</a></li>");
                     out.println("</ul>");
                     out.println("<h1>User Cart</h1>");
-                    out.println("<div>");
-                        out.println("<table>");
+                    out.println("<table align=\"center\">");
                             out.println("<tr>");
-                              out.println("<th>Item</td>");
-                              out.println("<th>Quantity</td>"); 
-                              out.println("<th>Price</td>");
+                              out.println("<th>Item</th>");
+                              out.println("<th>Quantity</th>"); 
+                              out.println("<th>Price</th>");
+                              out.println("<th>Item Cost</th>");
                             out.println("</tr>");
-                            out.println("<tr>");
-                              out.println("<td>Urban Decay Gwen Stefani Palette</td>");
-                              out.println("<td>1</td> ");
-                              out.println("<td>$45.00</td>");
-                            out.println("</tr>");
-
+                                for(int i=0;i<10;i++) {
+                                    if(theUser.items[i] != null ) {
+                                        out.println("<tr>");
+                                        out.println("<td>" + theUser.items[i] + "</td>");
+                                        out.println("<td>" + theUser.quantities[i] + "</td>");
+                                        out.println("<td>" + theUser.prices[i] + "</td>");
+                                        out.println("<td>" + theUser.prices[i] * theUser.quantities[i] + "</td>");
+                                        out.println("</tr>");
+                                        
+                                    }
+                                } 
+                            
                           out.println("</table>");
                         out.println("<br>");
-                        out.println("Order Total: $45.00");
-                    out.println("</div><br>");
-                    out.println("<div>");
+                        out.println("Order Total: $" + theUser.cartTotal);
+                        //PULL FROM DATABASE
+                        
+                        try
+                        {
+                            // This will load the MySQL driver, each DB has its own driver. You WILL NEED TO INSTALL THE DRIVER or you will get an error at runtime.
+                            Class.forName("com.mysql.jdbc.Driver").newInstance();
+                            // Setup the connection with the DB
+                            Connection connect = DriverManager.getConnection("jdbc:mysql://localhost/userDatabase"+ "?user=StephanieMetts&password=thePassword");
+                            // Statements allow to issue SQL queries to the database
+                            Statement statement = connect.createStatement();
+                            // Result set get the result of the SQL query
+                            ResultSet resultSet = statement.executeQuery("select balance from userDatabase.userTable WHERE username = '" + theUser.username + "'" );
+                            while(resultSet.next() != false)
+                            {
+                                int databaseBalance = resultSet.getInt("balance");
+
+                                out.println("Money in Balance: $" + databaseBalance + "<br/>");
+                            }
+                            connect.close();
+                        }
+                        catch(Exception e)
+                        {
+                            out.println("DATABASE PROBLEM");
+                        }
+                        
+                    out.println("<br>");
 
                     out.println("<form action=\"cart\" method=\"post\">");
                         out.println("<br><input type=\"text\" name=\"addmoney\">");
                         out.println("<input type=\"submit\" value=\"Add Money to Account\"><br>");
-
+                    out.println("</form>");
+                    out.println("<form action=\"cart\" method=\"post\">");
                         out.println("<input type=\"submit\" name =\"clearcart\" value =\"Clear Cart\">");
-                     out.println("<br>");
-                     out.println("<input type=\"submit\" name=\"checkout\" value =\"Checkout\">");
-                out.println("</form>");
+                        out.println("<br>");
+                        out.println("<input type=\"submit\" name=\"checkout\" value =\"Checkout\">");
+                    out.println("</form>");
 
-                out.println("</div>");
                 out.println("</form>");
                 out.println("</body>"); 
                 out.println("</html>");
-            } 
-            
-            else {
-                
-                if(addMoney == null  || addMoney.equals("") ) {
-                    
-                    if (clearCart != null ){
-                        out.println("Cart Cleared");
-                    } else if (checkout != null) {
-                        out.println("Checkout");
-                    } else {
-                    out.println("Money Added: " + addMoney);
-                    }
                 } else {
-                    out.println("Money Added: " + addMoney);
+                    if(clearCart != null) {
+                        out.print("Cart Cleared");
+                        for(int i=0;i<10;i++) {
+                            theUser.items[i] = null;
+                            theUser.quantities[i] = 0;
+                            theUser.prices[i] = 0.0;
+                            
+                        }
+                        theUser.cartTotal = 0.0;
+                    } else if(checkout != null) {
+                        if(theUser.balance >= theUser.cartTotal) {
+                            out.println("You have checked out.");
+                            //SEND ORDER TO ORDERHISTORY DATABASE
+                            
+                            try {
+                                // This will load the MySQL driver, each DB has its own driver. You WILL NEED TO INSTALL THE DRIVER or you will get an error at runtime.
+                                Class.forName("com.mysql.jdbc.Driver").newInstance();
+                                // Setup the connection with the DB
+                                Connection connect = DriverManager.getConnection("jdbc:mysql://localhost/userDatabase"+ "?user=StephanieMetts&password=thePassword");
+                                // Statements allow to issue SQL queries to the database
+                                Statement statement = connect.createStatement();
+                                // Result set get the result of the SQL query
+                                int a;
+                                int totalQuantity = 0;
+                                int itemCount = 0;
+                                for(a=0; a<10; a++) {
+                                    if(theUser.quantities[a] > 0) {
+                                        itemCount++;
+                                    }
+                                }
+                                
+                                
+                                ResultSet resultSet = statement.executeQuery("select orderNumber from userDatabase.orderHistoryTable where username = '" + theUser.username + "'");
+                                int databaseLastCartID = 0;
+                                while(resultSet.next() != false)
+                                {
+                                    databaseLastCartID = resultSet.getInt("orderNumber");
+                                }
+                                int currentCartID = databaseLastCartID + 1;
+                                
+                                int z;
+                                for(z=0; z<itemCount; z++){
+                                    statement.executeUpdate("insert into userDatabase.orderHistoryTable (orderNumber, username, itemName, itemQuantity, itemPrice, totalCartPrice) VALUES ("+ "'" + currentCartID + "', '" + theUser.username + "'" + "," +  "'" + theUser.items[z] +  "'" + ", " + "'" + theUser.quantities[z] + "'" + ", " + "'" + theUser.prices[z] + "', '" + theUser.cartTotal + "');");
+                                                           
+                                    
+                                }
+                                  
+                                
+                                connect.close();
+                            }
+                            catch(Exception e)
+                            {
+                                out.println("DATABASE PROBLEM");
+                                e.printStackTrace();
+                            }
+                            
+                            theUser.balance -= theUser.cartTotal;
+                            //UPDATE USER BALANCE IN DATABASE
+                            
+                            try {
+                                // This will load the MySQL driver, each DB has its own driver. You WILL NEED TO INSTALL THE DRIVER or you will get an error at runtime.
+                                Class.forName("com.mysql.jdbc.Driver").newInstance();
+                                // Setup the connection with the DB
+                                Connection connect = DriverManager.getConnection("jdbc:mysql://localhost/userDatabase"+ "?user=StephanieMetts&password=thePassword");
+                                // Statements allow to issue SQL queries to the database
+                                Statement statement = connect.createStatement();
+                                // Result set get the result of the SQL query
+                                
+                                    statement.executeUpdate("update userDatabase.userTable set balance =  " + "'" + theUser.balance + "'"  +  " where username = '" + theUser.username + "';");
+                                
+
+                                connect.close();
+                            }
+                            catch(Exception e)
+                            {
+                                out.println("DATABASE PROBLEM");
+                                e.printStackTrace();
+                            }
+                            
+                            for(int i=0;i<10;i++) {
+                                theUser.items[i] = null;
+                                theUser.quantities[i] = 0;
+                                theUser.prices[i] = 0.0;
+                            }
+                            theUser.cartTotal = 0.0;
+                        } else {
+                                out.println ("<html><body><script>document.write(\"You do not have enough money to checkout.\");</script></body></html>");
+                        }
+                    } else if(addMoney != null || !addMoney.equals("")) {
+                        theUser.balance += Double.parseDouble(addMoney);
+                                out.println ("<html><body><script>document.write(\"The following funds have been added:<br>\" + theUser.balance );</script></body></html>");
+                                //ADD MONEY TO BALANCE IN USERTABLE
+                                
+                                try {
+                                // This will load the MySQL driver, each DB has its own driver. You WILL NEED TO INSTALL THE DRIVER or you will get an error at runtime.
+                                Class.forName("com.mysql.jdbc.Driver").newInstance();
+                                // Setup the connection with the DB
+                                Connection connect = DriverManager.getConnection("jdbc:mysql://localhost/userDatabase"+ "?user=StephanieMetts&password=thePassword");
+                                // Statements allow to issue SQL queries to the database
+                                Statement statement = connect.createStatement();
+                                // Result set get the result of the SQL query
+                                
+                                    statement.executeUpdate("update userDatabase.userTable set balance =  " + "'" + theUser.balance + "'"  +  " where username = '" + theUser.username + "';");
+                                
+                                connect.close();
+                                }
+                                catch(Exception e)
+                                {
+                                    out.println("DATABASE PROBLEM");
+                                    e.printStackTrace();
+                                }
+                        
+                    }
+                    out.println("<!DOCTYPE html>");
+                    out.println("<html>");
+                    out.println("<head>");
+                    out.println("<title>Stephanie's Makeup Store Home Page</title>");   
+                    out.println("<link rel=\"stylesheet\" type=\"text/css\" href=\"newcss.css\">"); //this is linking to a css file
+                    out.println("</head>");
+                    out.println("<body>");
+                    out.println("<ul>");
+                    out.println("<li><a href=\"index\">Home Login/Logout</a></li>");
+                    out.println("<li><a href=\"registration\">New User</a></li>");
+                    out.println("<li><a href=\"content\">Products</a></li>");
+                    out.println("<li><a href=\"cart\">Cart</a></li>");
+                    out.println("<li><a href=\"orderhistory\">Order History</a></li>");
+                    out.println("</ul>");
+                    out.println("<h1>User Cart</h1>");
+                    out.println("<table align=\"center\">");
+                            out.println("<tr>");
+                              out.println("<th>Item</th>");
+                              out.println("<th>Quantity</th>"); 
+                              out.println("<th>Price</th>");
+                              out.println("<th>Item Cost</th>");
+                            out.println("</tr>");
+                            if(theUser.items[0] != null) {
+                                for(int i=0;i<10;i++) {
+                                    if(theUser.items[i] != null) {
+                                    out.println("<tr>");
+                                        out.println("<td>" + theUser.items[i] + "</td>");
+                                        out.println("<td>" + theUser.quantities[i] + "</td>");
+                                        out.println("<td>" + theUser.prices[i] + "</td>");
+                                        out.println("<td>" + theUser.prices[i] * theUser.quantities[i] + "</td>");
+                                        //theUser.cartTotal += (theUser.quantities[i] * theUser.prices[i]);
+                                    out.println("</tr>");
+                                        
+                                    }
+                                } 
+                            }
+                            
+                          out.println("</table>");
+                        out.println("<br>");
+                        out.println("Order Total: $" + theUser.cartTotal);
+                        out.println("<br>Money in Balance: $" + theUser.balance +"<br>");
+                    out.println("<br>");
+
+                    out.println("<form action=\"cart\" method=\"post\">");
+                        out.println("<br><input type=\"text\" name=\"addmoney\">");
+                        out.println("<input type=\"submit\" value=\"Add Money to Account\"><br>");
+                    out.println("</form>");
+                    out.println("<form action=\"cart\" method=\"post\">");
+                        out.println("<input type=\"submit\" name =\"clearcart\" value =\"Clear Cart\">");
+                        out.println("<br>");
+                        out.println("<input type=\"submit\" name=\"checkout\" value =\"Checkout\">");
+                    out.println("</form>");
+
+                out.println("</form>");
+                out.println("</body>"); 
+                out.println("</html>");
                 }
-            } 
-            //edit code below this line
-            
-            
-            
-            //for the below two commneted out examples, you will need to import request dispatcher and servlet context. Your ide will probably offer this as a quick fix
-          
-            //use the below two lines to forward the request to a local servlet. The client (user) will not know this has happened. As tested in class, this will NOT work for external urls.
-            ServletContext theContext = this.getServletContext();
-            theContext.getRequestDispatcher("cart").forward(request, response);
-            
-           
-           
-            //use the below line to tell the client to redirect to some external (or internal page)
-            response.sendRedirect("cart");
+            }
             
         }
     }
@@ -181,5 +382,6 @@ public class cart extends HttpServlet{
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
+    
 
 }

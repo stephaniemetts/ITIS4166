@@ -7,12 +7,17 @@ package login;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  *
@@ -70,10 +75,29 @@ public class orderhistory extends HttpServlet{
             /* TODO output your page here. You may use following sample code. */
             
             
+            HttpSession userSession = request.getSession();
+            User theUser = (User)userSession.getAttribute("session");
             
-              
-            //if(password == null || email == null || email.equals("") || password.equals("")) 
-            {
+            if (theUser == null || theUser.equals("")) {
+            out.println("<!DOCTYPE html>");
+                        out.println("<html>");
+                        out.println("<head>");
+                        out.println("<title>Stephanie's Makeup Store Home Page</title>");   
+                        out.println("<link rel=\"stylesheet\" type=\"text/css\" href=\"newcss.css\">"); //this is linking to a css file
+                        out.println("</head>");
+                        out.println("<body>");
+                        out.println("<ul>");
+                        out.println("<li><a href=\"index\">Home Login/Logout</a></li>");
+                        out.println("<li><a href=\"registration\">New User</a></li>");
+                        out.println("<li><a href=\"content\">Products</a></li>");
+                        out.println("<li><a href=\"cart\">Cart</a></li>");
+                        out.println("<li><a href=\"orderhistory\">Order History</a></li>");
+                        out.println("</ul>");
+                out.print("You are not logged in.");
+                        out.println("</body>");
+                        out.println("</html>");
+                        response.sendRedirect("./index");
+            } else {
                 out.println("<!DOCTYPE html>");
                 out.println("<html>");
                 out.println("<head>");
@@ -82,33 +106,78 @@ public class orderhistory extends HttpServlet{
                 out.println("</head>");
                 out.println("<body>");
                 out.println("<ul>");
-                out.println("<li><a href=\"index\">Home Login</a></li>");
+                out.println("<li><a href=\"index\">Home Login/Logout</a></li>");
                 out.println("<li><a href=\"registration\">New User</a></li>");
                 out.println("<li><a href=\"content\">Products</a></li>");
                 out.println("<li><a href=\"cart\">Cart</a></li>");
                 out.println("<li><a href=\"orderhistory\">Order History</a></li>");
                 out.println("</ul>");
-                
+                out.println("Hello, " + theUser.firstName + "!");
                 out.println("<h1>Order History</h1>");
         
                 out.println("<table align=\"center\">");
                 out.println("<tr>");
-                  out.println("<th>Order Date</td>");
-                  out.println("<th>Order Number</td> ");
-                  out.println("<th>Total Price</td>");
+                  out.println("<th>Order Number</td>");
+                  out.println("<th>Item Name</td> ");
+                  out.println("<th>Item Quanitity</td>");
+                  out.println("<th>Total Price<th>");
+                  
                 out.println("</tr>");
-                out.println("<tr>");
-                  out.println("<td>1/26/2015</td>");
-                  out.println("<td>4584AXG</td> ");
-                  out.println("<td>$45.00</td>");
-                out.println("</tr>");
-                out.println("<tr>");
-                    out.println("<td>3/28/1992</td>");
-                    out.println("<td>3425IUS</td>");
-                    out.println("<td>$325.00</td>");
-                out.println("</tr>");
+                //GET ORDERS FROM CARTTABLE
+                try
+                {
+                    // This will load the MySQL driver, each DB has its own driver. You WILL NEED TO INSTALL THE DRIVER or you will get an error at runtime.
+                    Class.forName("com.mysql.jdbc.Driver").newInstance();
+                    // Setup the connection with the DB
+                    Connection connect = DriverManager.getConnection("jdbc:mysql://localhost/userDatabase"+ "?user=StephanieMetts&password=thePassword");
+                    // Statements allow to issue SQL queries to the database
+                    Statement statement = connect.createStatement();
+                    // Result set get the result of the SQL query
+                    ResultSet resultSet = statement.executeQuery("select * from userDatabase.orderHistoryTable where username = '" + theUser.username + "'");
+                    
+                    int totalSiteCost = 0;
+                    int orderCost = 0;
+                    int currentCartCost = 0;
+                    
+                    while(resultSet.next() != false)
+                    {
+                        int orderNumber = resultSet.getInt("orderNumber");
+                        String itemName = resultSet.getString("itemName");
+                        int itemQuantities = resultSet.getInt("itemQuantity");
+                        int itemPrice = resultSet.getInt("itemPrice");
+                        int totalCartCost = resultSet.getInt("totalCartPrice");
+                        itemPrice = itemQuantities * itemPrice;
+                        totalSiteCost += itemPrice;
+                        currentCartCost += itemPrice;
+                        out.println("<tr>");
+                            out.println("<td>" + orderNumber + "</td>");
+                            out.println("<td>" + itemName +"</td>");
+                            out.println("<td>" + itemQuantities + "</td>");
+                            out.println("<td>" + itemPrice + "</td>");
+                        out.println("</tr>");
+                        
+                        if(currentCartCost == totalCartCost) {
+                            out.println("<tr>");
+                                out.println("<td>&nbsp</td>");
+                                out.println("<td>&nbsp</td>");
+                                out.println("<td>Cart Total: </td>");
+                                out.println("<td>" + totalCartCost + "</td>");
+                            out.println("</tr>");
+                            currentCartCost = 0;
+                        }
+                        
+                    }
+                    
+                    connect.close();
+                    
+                    out.println("</table><br>");
+                    out.println("Total Orders Cost: $" + totalSiteCost);
+                }
+                catch(Exception e)
+                {
+                    out.println("DATABASE PROBLEM");
+                }
              
-              out.println("</table>");
                 
                 out.println("</div>");
                 out.println("</form>");

@@ -54,7 +54,7 @@ table, th, td {
 }
 table {
     border-collapse: collapse;
-    width: 30%;
+    width: 50%;
     align: center;
 }
 
@@ -69,16 +69,16 @@ th, td {
 }
 
 input[type=text] {
-    width: 15%;
+    width: 10%;
     padding: 10px 10px;
     margin: 5px 0;
     box-sizing: border-box;
 }
 
 input[type=password] {
-    width: 20%;
+    width: 10%;
     padding: 10px 10px;
-    margin: 8px 0;
+    margin: 5px 0;
     box-sizing: border-box;
 }
 
@@ -86,7 +86,7 @@ input[type=button], input[type=submit], input[type=reset] {
      background-color: dodgerblue;
     border: none;
     color: white;
-    padding: 10px;
+    padding: 15px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -98,7 +98,7 @@ input[type=button], input[type=submit], input[type=reset] {
     background-color: dodgerblue;
     border: none;
     color: white;
-    padding: 10px;
+    padding: 15px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
