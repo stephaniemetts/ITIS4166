@@ -1,0 +1,23 @@
+create database userDatabase;
+use userDatabase;
+CREATE USER 'StephanieMetts'@'localhost' IDENTIFIED BY 'thePassword';
+GRANT ALL PRIVILEGES ON userDatabase . * TO 'StephanieMetts'@'localhost';
+
+create table userTable (
+firstName varchar(255),
+lastName varchar(255),
+username varchar(255) PRIMARY KEY,
+email varchar(255),
+password varchar(255),
+gender varchar(255),
+balance int(30)
+);
+
+create table orderHistoryTable (
+username varchar(255),
+itemName varchar(255),
+itemQuantity int(20),
+itemPrice int(20),
+orderNumber int(255),
+totalCartPrice int(20)
+);
